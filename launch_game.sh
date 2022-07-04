@@ -50,17 +50,21 @@ launch_game() {
     fi
 }
 
-set_complete() {
-    WORDS=$(find "$STEAM_FOLDER" -maxdepth 1 -type f -name '*.acf' -exec awk -F '"' '/"name/{ printf $4 "\t" }' {} \;)
-    IFS=$'\t'
-    complete -W "${WORDS//\'/\\\'}" -o nospace "$1"
+#https://stackoverflow.com/a/11536437/2535649
+compute_complete() {
+    # Filter our candidates
+    while read -r id game ; do
+        if [[ "$game" =~ ^"${COMP_WORDS[COMP_CWORD]}" ]]; then
+            COMPREPLY+=("${game//\'/\\\'}")
+        fi
+    done < <(find "$STEAM_FOLDER" -maxdepth 1 -type f -name '*.acf' -exec awk -F '"' '/"appid|name/{ printf $4 " " } END { print "" }' {} \;)
 }
 
 if [[ "$*" =~ ^autocomplete$ ]] ; then
-    if [ "$0" == "${BASH_SOURCE[*]}" ] ; then
+    if [ "$0" = "${BASH_SOURCE[*]}" ] ; then
         echo "Autocomplete script will not work correctly if you don't source this command."
     fi
-    set_complete "${BASH_SOURCE[0]}"
+    complete -F compute_complete -o nospace "$(basename "${BASH_SOURCE[0]:-./launch_game.sh}")"
 else
     launch_game "$@"
 fi
