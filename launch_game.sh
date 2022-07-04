@@ -53,11 +53,14 @@ launch_game() {
 set_complete() {
     WORDS=$(find "$STEAM_FOLDER" -maxdepth 1 -type f -name '*.acf' -exec awk -F '"' '/"name/{ printf $4 "\t" }' {} \;)
     IFS=$'\t'
-    complete -W "${WORDS//\'/\\\'}" -o nospace launch_game.sh
+    complete -W "${WORDS//\'/\\\'}" -o nospace "$1"
 }
 
-if [[ "$*" =~ autocomplete ]] ; then
-    set_complete
+if [[ "$*" =~ ^autocomplete$ ]] ; then
+    if [ "$0" == "${BASH_SOURCE[*]}" ] ; then
+        echo "Autocomplete script will not work correctly if you don't source this command."
+    fi
+    set_complete "${BASH_SOURCE[0]}"
 else
     launch_game "$@"
 fi
