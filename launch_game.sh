@@ -3,7 +3,6 @@
 # https://github.com/git/git/blob/master/contrib/completion/git-completion.bash
 # https://unix.stackexchange.com/questions/77009/custom-autocomplete-deal-with-spaces-in-filenames
 
-set -e
 STEAM_FOLDER_SEARCH_PATH=("${HOME}/.steam/steam/SteamApps" "${HOME}/Library/Application Support/Steam/steamapps")
 for FOLDER in "${STEAM_FOLDER_SEARCH_PATH[@]}"; do
     if [ -d "$FOLDER" ] ; then 
